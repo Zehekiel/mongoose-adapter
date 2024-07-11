@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {Schema, Document} from 'mongoose';
+import { Schema, Document } from 'mongoose';
 
 export interface IModel extends Document {
   ptype: string;
@@ -28,39 +28,65 @@ export const collectionName = 'casbin_rule';
 export const modelName = 'CasbinRule';
 
 export const schema = (timestamps = false) => {
-  return new Schema({
-    ptype: {
-      type: Schema.Types.String,
-      required: true,
-      index: true
+  return new Schema(
+    {
+      ptype: {
+        type: Schema.Types.String,
+        required: true,
+        index: true
+      },
+      v0: {
+        type: Schema.Types.String,
+        index: true
+      },
+      v1: {
+        type: Schema.Types.String,
+        index: true
+      },
+      v2: {
+        type: Schema.Types.String,
+        index: true
+      },
+      v3: {
+        type: Schema.Types.String,
+        index: true
+      },
+      v4: {
+        type: Schema.Types.String,
+        index: true
+      },
+      v5: {
+        type: Schema.Types.String,
+        index: true
+      }
     },
-    v0: {
-      type: Schema.Types.String,
-      index: true
-    },
-    v1: {
-      type: Schema.Types.String,
-      index: true
-    },
-    v2: {
-      type: Schema.Types.String,
-      index: true
-    },
-    v3: {
-      type: Schema.Types.String,
-      index: true
-    },
-    v4: {
-      type: Schema.Types.String,
-      index: true
-    },
-    v5: {
-      type: Schema.Types.String,
-      index: true
+    {
+      collection: collectionName,
+      minimize: false,
+      timestamps: timestamps,
+      isDeleted: { type: Boolean, default: false }
     }
-  }, {
-    collection: collectionName,
-    minimize: false,
-    timestamps: timestamps
-  });
-}
+  );
+};
+
+schema().pre('find', function () {
+  this.where({ isDeleted: false });
+});
+
+schema().pre('findOne', function () {
+  this.where({ isDeleted: false });
+});
+
+schema().pre('findOneAndUpdate', function () {
+  this.where({ isDeleted: false });
+});
+
+// Add isDeleted when deleting a document
+schema().pre('deleteOne', { document: true, query: false }, function () {
+  this.updateOne({ isDeleted: true });
+});
+
+// Add isDeleted when deleting a document
+schema().pre('deleteMany', { document: false, query: true }, function () {
+  this.updateMany({ isDeleted: true });
+});
