@@ -83,10 +83,12 @@ schema().pre('findOneAndUpdate', function () {
 
 // Add isDeleted when deleting a document
 schema().pre('deleteOne', { document: true, query: false }, function () {
+  console.log('🚀 ~ deleteOne:');
   this.updateOne({ isDeleted: true });
 });
 
 // Add isDeleted when deleting a document
 schema().pre('deleteMany', { document: false, query: true }, function () {
+  console.log('🚀 ~ deleteMany:');
   this.updateMany({ isDeleted: true });
 });
